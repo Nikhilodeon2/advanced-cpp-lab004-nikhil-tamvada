@@ -1,5 +1,8 @@
 #include "TA.h"
 
+#include <cmath>
+#include <utility>
+
 TA::TA()
     : Person(), Student(), Faculty(),
       course_("CS101"), hoursPerWeek_(0.0), responsibilities_("None") {}
@@ -8,32 +11,48 @@ TA::TA(std::string name, std::string id, std::string email,
        std::string major, double gpa, int completedCredits,
        std::string department, std::string rank, std::string office,
        std::string course, double hoursPerWeek, std::string responsibilities)
-    : Person(std::move(name), std::move(id), std::move(email)),
-      Student(std::move(name), std::move(id), std::move(email), std::move(major), gpa, completedCredits),
-      Faculty(std::move(name), std::move(id), std::move(email), std::move(department), std::move(rank), std::move(office)),
+    : Person(name, id, email),
+      Student(name, id, email, std::move(major), gpa, completedCredits),
+      Faculty(name, id, email, std::move(department), std::move(rank), std::move(office)),
       course_(std::move(course)), hoursPerWeek_(hoursPerWeek), responsibilities_(std::move(responsibilities)) {
-    if (hoursPerWeek_ < 0.0) {
+    if (course_.empty()) {
+        throw std::invalid_argument("course cannot be empty");
+    }
+    if (!std::isfinite(hoursPerWeek_) || hoursPerWeek_ < 0.0) {
         throw std::invalid_argument("hours per week cannot be negative");
+    }
+    if (responsibilities_.empty()) {
+        throw std::invalid_argument("responsibilities cannot be empty");
     }
 }
 
-// TODO: Implement getCourse and setCourse methods.
-const std::string& TA::getCourse() const noexcept { }
-void TA::setCourse(const std::string& course) {  }
-
-
-// TODO: Implement getHoursPerWeek and setHoursPerWeek methods.
-double TA::getHoursPerWeek() const noexcept { }
-void TA::setHoursPerWeek(double hoursPerWeek) {
+const std::string& TA::getCourse() const noexcept { return course_; }
+void TA::setCourse(const std::string& course) {
+    if (course.empty()) {
+        throw std::invalid_argument("course cannot be empty");
+    }
+    course_ = course;
 }
 
-//TODO: Implement getResponsibilities and setResponsibilities methods.
-const std::string& TA::getResponsibilities() const noexcept {  }
-void TA::setResponsibilities(const std::string& responsibilities) {  }
 
-// TODO: Implement getRole method to return "TA".
+double TA::getHoursPerWeek() const noexcept { return hoursPerWeek_; }
+void TA::setHoursPerWeek(double hoursPerWeek) {
+    if (!std::isfinite(hoursPerWeek) || hoursPerWeek < 0.0) {
+        throw std::invalid_argument("hours per week cannot be negative");
+    }
+    hoursPerWeek_ = hoursPerWeek;
+}
+
+const std::string& TA::getResponsibilities() const noexcept { return responsibilities_; }
+void TA::setResponsibilities(const std::string& responsibilities) {
+    if (responsibilities.empty()) {
+        throw std::invalid_argument("responsibilities cannot be empty");
+    }
+    responsibilities_ = responsibilities;
+}
+
 std::string TA::getRole() const {
-
+    return "TA";
 }
 
 std::string TA::getDescription() const {
@@ -49,7 +68,6 @@ void TA::display(std::ostream& os) const {
        << ", hours=" << hoursPerWeek_ << ", responsibilities=" << responsibilities_ << "]";
 }
 
-// TODO: Implement clone method to return a unique_ptr to a new TA object.
 std::unique_ptr<Person> TA::clone() const {
-
+    return std::make_unique<TA>(*this);
 }

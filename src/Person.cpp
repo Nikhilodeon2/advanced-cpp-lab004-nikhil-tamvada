@@ -1,26 +1,39 @@
 #include "Person.h"
 
-// TODO: Implement default constructor and parameterized constructor with validation.
-Person::Person() {}
+#include <utility>
 
-// TODO: Implement default constructor and parameterized constructor with validation.
-Person::Person(std::string name, std::string id, std::string email){
+Person::Person() : Person("Unknown", "Unknown", "unknown@example.com") {}
+
+Person::Person(std::string name, std::string id, std::string email)
+    : name_(std::move(name)), id_(std::move(id)), email_(std::move(email)) {
+    if (name_.empty() || id_.empty() || email_.empty() || email_.find('@') == std::string::npos) {
+        throw std::invalid_argument("name, id, and a valid email are required");
+    }
 }
 
-//TODO: Implement getName and setName methods.
-const std::string& Person::getName() const noexcept { }
-void Person::setName(const std::string& name) { }
+const std::string& Person::getName() const noexcept { return name_; }
+void Person::setName(const std::string& name) {
+    if (name.empty()) {
+        throw std::invalid_argument("name cannot be empty");
+    }
+    name_ = name;
+}
 
 
-// TODO: Implement getId and setId methods.
-const std::string& Person::getId() const noexcept { }
+const std::string& Person::getId() const noexcept { return id_; }
 void Person::setId(const std::string& id) {
-
+    if (id.empty()) {
+        throw std::invalid_argument("id cannot be empty");
+    }
+    id_ = id;
 }
 
-// TODO: Implement getEmail and setEmail methods.
-const std::string& Person::getEmail() const noexcept { }
+const std::string& Person::getEmail() const noexcept { return email_; }
 void Person::setEmail(const std::string& email) {
+    if (email.empty() || email.find('@') == std::string::npos) {
+        throw std::invalid_argument("email must be valid");
+    }
+    email_ = email;
 }
 
 std::ostream& operator<<(std::ostream& os, const Person& person) {

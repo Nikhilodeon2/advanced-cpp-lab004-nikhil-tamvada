@@ -1,12 +1,18 @@
 #include "Student.h"
 
+#include <cmath>
+#include <utility>
+
 Student::Student() : Person(), major_("Undeclared"), gpa_(0.0), completedCredits_(0) {}
 
 Student::Student(std::string name, std::string id, std::string email,
                std::string major, double gpa, int completedCredits)
     : Person(std::move(name), std::move(id), std::move(email)),
       major_(std::move(major)), gpa_(gpa), completedCredits_(completedCredits) {
-    if (gpa_ < 0.0 || gpa_ > 4.0) {
+        if (major_.empty()) {
+                throw std::invalid_argument("major cannot be empty");
+        }
+    if (!std::isfinite(gpa_) || gpa_ < 0.0 || gpa_ > 4.0) {
         throw std::invalid_argument("gpa must be between 0.0 and 4.0");
     }
     if (completedCredits_ < 0) {
@@ -14,24 +20,32 @@ Student::Student(std::string name, std::string id, std::string email,
     }
 }
 
-// TODO: Implement getMajor and setMajor methods.
-const std::string& Student::getMajor() const noexcept { }
-void Student::setMajor(const std::string& major) {  }
+const std::string& Student::getMajor() const noexcept { return major_; }
+void Student::setMajor(const std::string& major) {
+    if (major.empty()) {
+        throw std::invalid_argument("major cannot be empty");
+    }
+    major_ = major;
+}
 
-// TODO: Implement getGpa and setGpa methods.
-double Student::getGpa() const noexcept { }
+double Student::getGpa() const noexcept { return gpa_; }
 void Student::setGpa(double gpa) {
+    if (!std::isfinite(gpa) || gpa < 0.0 || gpa > 4.0) {
+        throw std::invalid_argument("gpa must be between 0.0 and 4.0");
+    }
+    gpa_ = gpa;
 }
 
-// TODO: Implement getCompletedCredits and setCompletedCredits methods.
-int Student::getCompletedCredits() const noexcept { }
+int Student::getCompletedCredits() const noexcept { return completedCredits_; }
 void Student::setCompletedCredits(int credits) {
-   
+    if (credits < 0) {
+        throw std::invalid_argument("completed credits cannot be negative");
+    }
+    completedCredits_ = credits;
 }
 
-// TODO: Implement getRole method to return "Student".
 std::string Student::getRole() const {
-
+    return "Student";
 }
 
 
